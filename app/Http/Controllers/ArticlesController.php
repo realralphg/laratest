@@ -8,93 +8,48 @@ use App\Http\Resources\ArticleResource;
 
 class ArticlesController extends Controller
 {
-
+    // I N D E X 
     public function index()
     {        
-        $articles = Article::paginate(5);
+        $articles = Article::latest()->paginate(10);
         return ArticleResource::collection($articles);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // S T O R E 
     public function store(Request $request)
     {
-
         $article = Article::create($request->all());
-
-        return response()->json($article);        
-        // return Article::create([
-        //     'title' => $request['title'],
-        //     'body' => $request['body'],
-        // ]);
-
-        // $article = new Article([
-        //     'article'=>$request->input('title'),
-        //     'body'=>$request->input('body'),         
-        // ]);
-
-            //$article->title = $request('title');          
-            //$article->body = $request('body');   
-
-        // $article->save();
+        return response()->json($article, 201);        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // S H O W 
     public function show($id)
     {
-        //
+        $article = Article::findOrFail($id);
+        return response()->json($article, 200);
+        // return response()->json([
+        //     'status' => 'success',
+        //     'message' => 'the status message',
+        //     'data' => $article
+        // ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // U P D A T E 
     public function update(Request $request, $id)
     {
-        //
+        $article = Article::findOrFail($id);
+        if(!$article){
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+        $article->update($request->all());
+        return response()->json(['message' => 'updated'], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // D E S T R O Y 
     public function destroy($id)
     {
-        //
+        $article = Article::findOrFail($id);
+        $article->delete();
+        return response()->json(['message' => 'deleted'], 200);
     }
 }
